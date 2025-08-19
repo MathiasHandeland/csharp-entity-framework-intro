@@ -71,9 +71,9 @@ namespace exercise.webapi.Endpoints
 
             };
 
-            // send back the url of the product just updated
+            // send back the url of the book just updated
             var baseUrl = $"{request.Scheme}://{request.Host}{request.PathBase}";
-            var location = $"{baseUrl}/products/{updatedBook.Id}";
+            var location = $"{baseUrl}/books/{updatedBook.Id}";
             return TypedResults.Created(location, bookDto);
         
         }
@@ -100,10 +100,8 @@ namespace exercise.webapi.Endpoints
         public static async Task<IResult> AddBook(IBookRepository bookRepository, HttpRequest request, [FromBody] BookPostDto model)
         {
             if (model == null || string.IsNullOrWhiteSpace(model.Title)) { return TypedResults.BadRequest("Book object not valid"); }
-            // TODO add check for if the author exists
             if (model.AuthorId <= 0) { return TypedResults.NotFound("Author ID not found. Author ID must be a positive integer."); }
 
-            // check if the author exists
             var newBook = new Book
             {
                 Title = model.Title,
@@ -122,7 +120,10 @@ namespace exercise.webapi.Endpoints
 
             };
 
-            return TypedResults.Created($"{request.Scheme}://{request.Host}{request.PathBase}/books/{addedBook.Id}", bookDto);
+            // send back the url of the book just created
+            var baseUrl = $"{request.Scheme}://{request.Host}{request.PathBase}";
+            var location = $"{baseUrl}/books/{addedBook.Id}";
+            return TypedResults.Created(location, bookDto);
 
         }
     }

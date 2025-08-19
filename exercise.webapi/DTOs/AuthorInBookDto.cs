@@ -1,5 +1,6 @@
 namespace exercise.webapi.DTOs
 {
+    // DTO used inside BookGetDto to represent a author of a book with basic author details and without the collection of books a author has
     public class AuthorInBookDto
     {
         public int Id { get; set; }

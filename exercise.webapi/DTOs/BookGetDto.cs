@@ -2,6 +2,7 @@
 
 namespace exercise.webapi.DTOs
 {
+    // DTO for returning Book data and basic author details (without the collection of books the author has)
     public class BookGetDto
     {
         public int Id { get; set; }
