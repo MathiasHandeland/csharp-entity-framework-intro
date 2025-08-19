@@ -6,7 +6,7 @@ namespace exercise.webapi.Repository
 {
     public class BookRepository: IBookRepository
     {
-        DataContext _db;
+        private DataContext _db;
         
         public BookRepository(DataContext db)
         {
