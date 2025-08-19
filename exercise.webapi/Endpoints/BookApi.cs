@@ -14,6 +14,8 @@ namespace exercise.webapi.Endpoints
             books.MapGet("/", GetBooks);
             books.MapGet("/{id}", GetBookById);
             books.MapPut("/{id}", UpdateBook);
+            books.MapDelete("/{id}", DeleteBook);
+            books.MapPost("/", AddBook);
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -73,6 +75,52 @@ namespace exercise.webapi.Endpoints
             var location = $"{baseUrl}/products/{updatedBook.Id}";
             return TypedResults.Created(location, bookDto);
         
+        }
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public static async Task<IResult> DeleteBook(int id, IBookRepository bookRepository)
+        {
+            var targetBook = await bookRepository.DeleteBook(id);
+            if (targetBook == null) return TypedResults.NotFound($"Book with ID {id} not found.");
+            return TypedResults.Ok(new BookGetDto
+            {
+                Id = targetBook.Id,
+                Title = targetBook.Title,
+                Author = targetBook.Author == null ? null : new Author { Id = targetBook.Author.Id, FirstName = targetBook.Author.FirstName, LastName = targetBook.Author.LastName, Email = targetBook.Author.Email }
+            });
+
+        }
+
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public static async Task<IResult> AddBook(IBookRepository bookRepository, HttpRequest request, [FromBody] BookPostDto model)
+        {
+            if (model == null || string.IsNullOrWhiteSpace(model.Title)) { return TypedResults.BadRequest("Book object not valid"); }
+            // TODO add check for if the author exists
+            if (model.AuthorId <= 0) { return TypedResults.NotFound("Author ID not found. Author ID must be a positive integer."); }
+
+            // check if the author exists
+            var newBook = new Book
+            {
+                Title = model.Title,
+                AuthorId = model.AuthorId
+            };
+
+            // add book to the repository
+            var addedBook = await bookRepository.AddBook(newBook);
+
+            // dto mapping for response
+            var bookDto = new BookGetDto
+            {
+                Id = addedBook.Id,
+                Title = addedBook.Title,
+                Author = addedBook.Author == null ? null : new Author { Id = addedBook.Author.Id, FirstName = addedBook.Author.FirstName, LastName = addedBook.Author.LastName, Email = addedBook.Author.Email }
+            };
+
+            return TypedResults.Created($"{request.Scheme}://{request.Host}{request.PathBase}/books/{addedBook.Id}", bookDto);
+
         }
     }
 }
