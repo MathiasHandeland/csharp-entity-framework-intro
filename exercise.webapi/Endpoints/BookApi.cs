@@ -13,13 +13,14 @@ namespace exercise.webapi.Endpoints
 
             books.MapGet("/", GetBooks);
             books.MapGet("/{id}", GetBookById);
+            books.MapPut("/{id}", UpdateBook);
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         private static async Task<IResult> GetBooks(IBookRepository bookRepository)
         {
             var books = await bookRepository.GetAllBooks();
-            var bookDtos = books.Select(b => new BookDto
+            var bookDtos = books.Select(b => new BookGetDto
             {
                 Id = b.Id,
                 Title = b.Title,
@@ -35,13 +36,43 @@ namespace exercise.webapi.Endpoints
         {
             var targetBook = await bookRepository.GetBookById(id);
             if (targetBook == null) return TypedResults.NotFound($"Book with ID {id} not found.");
-            var bookDto = new BookDto
+            var bookDto = new BookGetDto
             {
                 Id = targetBook.Id,
                 Title = targetBook.Title,
                 Author = targetBook.Author == null ? null : new Author { Id = targetBook.Author.Id, FirstName = targetBook.Author.FirstName, LastName = targetBook.Author.LastName, Email = targetBook.Author.Email }  
             };
             return TypedResults.Ok(bookDto);
+        }
+
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public static async Task<IResult> UpdateBook(int id, IBookRepository bookRepository, HttpRequest request, [FromBody] BookPutDto model)
+        {
+            if (model == null) return TypedResults.BadRequest("Invalid book data provided.");
+            if (model.AuthorId <= 0) return TypedResults.BadRequest("Author ID must be a positive integer.");
+
+            var bookToUpdate = await bookRepository.GetBookById(id);
+            if (bookToUpdate == null) return TypedResults.NotFound($"Book with ID {id} not found.");
+
+            bookToUpdate.AuthorId = model.AuthorId; // Update the book's author id if provided
+
+            var updatedBook = await bookRepository.UpdateBook(id, bookToUpdate); // sends the updated product object to your repository method.
+
+            // configure the response to return the updated book with its author
+            var bookDto = new BookGetDto
+            {
+                Id = updatedBook.Id,
+                Title = updatedBook.Title,
+                Author = updatedBook.Author == null ? null : new Author { Id = updatedBook.Author.Id, FirstName = updatedBook.Author.FirstName, LastName = updatedBook.Author.LastName, Email = updatedBook.Author.Email }
+            };
+
+            // send back the url of the product just updated
+            var baseUrl = $"{request.Scheme}://{request.Host}{request.PathBase}";
+            var location = $"{baseUrl}/products/{updatedBook.Id}";
+            return TypedResults.Created(location, bookDto);
+        
         }
     }
 }

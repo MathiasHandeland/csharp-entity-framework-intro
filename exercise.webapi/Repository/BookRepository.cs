@@ -25,5 +25,17 @@ namespace exercise.webapi.Repository
                 .Include(b => b.Author) // include author data
                 .FirstOrDefaultAsync(b => b.Id == id); // find the target book by id
         }
+
+        public async Task<Book> UpdateBook(int id, Book model)
+        {
+            var targetBook = await _db.Books.FindAsync(id); // finds the book by id
+            if (targetBook == null) return null; // if book not found, return null
+            targetBook.AuthorId = model.AuthorId; // Updates the book's author id
+            await _db.SaveChangesAsync(); // Saves changes to the database asynchronously
+            return await _db.Books
+                .Include(b => b.Author) // include author data
+                .FirstOrDefaultAsync(b => b.Id == id); // return the updated book with its author
+        }
+        
     }
 }
