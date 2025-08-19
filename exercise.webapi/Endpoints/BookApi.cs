@@ -50,10 +50,13 @@ namespace exercise.webapi.Endpoints
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public static async Task<IResult> UpdateBook(int id, IBookRepository bookRepository, HttpRequest request, [FromBody] BookPutDto model)
+        public static async Task<IResult> UpdateBook(int id, IBookRepository bookRepository, HttpRequest request, [FromBody] BookPutDto model, IAuthorRepository authorRepository)
         {
-            if (model == null) return TypedResults.BadRequest("Invalid book data provided.");
-            if (model.AuthorId <= 0) return TypedResults.BadRequest("Author ID must be a positive integer.");
+            if (model == null) { return TypedResults.BadRequest("Book object not valid"); }
+
+            // check if author exists and is valid
+            var author = await authorRepository.GetAuthorById(model.AuthorId);
+            if (author == null || model.AuthorId <= 0) { return TypedResults.NotFound($"Author with ID {model.AuthorId} not found. Provide a valid positive integer for author id"); }
 
             var bookToUpdate = await bookRepository.GetBookById(id);
             if (bookToUpdate == null) return TypedResults.NotFound($"Book with ID {id} not found.");
@@ -97,10 +100,13 @@ namespace exercise.webapi.Endpoints
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public static async Task<IResult> AddBook(IBookRepository bookRepository, HttpRequest request, [FromBody] BookPostDto model)
+        public static async Task<IResult> AddBook(IBookRepository bookRepository, HttpRequest request, [FromBody] BookPostDto model, IAuthorRepository authorRepository)
         {
             if (model == null || string.IsNullOrWhiteSpace(model.Title)) { return TypedResults.BadRequest("Book object not valid"); }
-            if (model.AuthorId <= 0) { return TypedResults.NotFound("Author ID not found. Author ID must be a positive integer."); }
+
+            // check if author exists
+            var author = await authorRepository.GetAuthorById(model.AuthorId);
+            if (author == null || model.AuthorId <= 0) { return TypedResults.NotFound($"Author with ID {model.AuthorId} not found. Provide a valid positive integer for author id"); }
 
             var newBook = new Book
             {
