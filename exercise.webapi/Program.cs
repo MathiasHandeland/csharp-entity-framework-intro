@@ -31,4 +31,6 @@ app.UseHttpsRedirection();
 
 app.ConfigureBooksApi();
 
+app.ConfigureAuthorApi();
+
 app.Run();
