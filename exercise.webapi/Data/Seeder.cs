@@ -2,6 +2,7 @@
 
 namespace exercise.webapi.Data
 {
+    // This class is responsible for seeding the database with initial data - creates random lists of authors and books.
     public class Seeder
     {
         private List<string> _firstnames = new List<string>()

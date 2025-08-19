@@ -5,6 +5,7 @@ using System.Reflection.Emit;
 
 namespace exercise.webapi.Data
 {
+    // This class manages the connection to the data store and maps the models Author and Book to database tables
     public class DataContext : DbContext
     {
 
@@ -26,7 +27,7 @@ namespace exercise.webapi.Data
             modelBuilder.Entity<Book>().HasData(seeder.Books);
 
         }
-        public DbSet<Author> Authors { get; set; }
-        public DbSet<Book> Books { get; set; }
+        public DbSet<Author> Authors { get; set; } // The DbSet for Author entities - is initialized by the seeder
+        public DbSet<Book> Books { get; set; } // The DbSet for Book entities - is initialized by the seeder
     }
 }
