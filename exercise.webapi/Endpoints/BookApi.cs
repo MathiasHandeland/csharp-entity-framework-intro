@@ -26,7 +26,7 @@ namespace exercise.webapi.Endpoints
             {
                 Id = b.Id,
                 Title = b.Title,
-                Author = b.Author == null ? null : new Author { Id = b.Author.Id, FirstName = b.Author.FirstName, LastName = b.Author.LastName, Email = b.Author.Email }  
+                Author = b.Author == null ? null : new AuthorInBookDto { Id = b.Author.Id, FirstName = b.Author.FirstName, LastName = b.Author.LastName, Email = b.Author.Email }
             });
 
             return TypedResults.Ok(bookDtos);
@@ -42,7 +42,7 @@ namespace exercise.webapi.Endpoints
             {
                 Id = targetBook.Id,
                 Title = targetBook.Title,
-                Author = targetBook.Author == null ? null : new Author { Id = targetBook.Author.Id, FirstName = targetBook.Author.FirstName, LastName = targetBook.Author.LastName, Email = targetBook.Author.Email }  
+                Author = targetBook.Author == null ? null : new AuthorInBookDto { Id = targetBook.Author.Id, FirstName = targetBook.Author.FirstName, LastName = targetBook.Author.LastName, Email = targetBook.Author.Email }
             };
             return TypedResults.Ok(bookDto);
         }
@@ -67,7 +67,8 @@ namespace exercise.webapi.Endpoints
             {
                 Id = updatedBook.Id,
                 Title = updatedBook.Title,
-                Author = updatedBook.Author == null ? null : new Author { Id = updatedBook.Author.Id, FirstName = updatedBook.Author.FirstName, LastName = updatedBook.Author.LastName, Email = updatedBook.Author.Email }
+                Author = updatedBook.Author == null ? null : new AuthorInBookDto { Id = updatedBook.Author.Id, FirstName = updatedBook.Author.FirstName, LastName = updatedBook.Author.LastName, Email = updatedBook.Author.Email }
+
             };
 
             // send back the url of the product just updated
@@ -87,7 +88,8 @@ namespace exercise.webapi.Endpoints
             {
                 Id = targetBook.Id,
                 Title = targetBook.Title,
-                Author = targetBook.Author == null ? null : new Author { Id = targetBook.Author.Id, FirstName = targetBook.Author.FirstName, LastName = targetBook.Author.LastName, Email = targetBook.Author.Email }
+                Author = targetBook.Author == null ? null : new AuthorInBookDto { Id = targetBook.Author.Id, FirstName = targetBook.Author.FirstName, LastName = targetBook.Author.LastName, Email = targetBook.Author.Email }
+
             });
 
         }
@@ -116,7 +118,8 @@ namespace exercise.webapi.Endpoints
             {
                 Id = addedBook.Id,
                 Title = addedBook.Title,
-                Author = addedBook.Author == null ? null : new Author { Id = addedBook.Author.Id, FirstName = addedBook.Author.FirstName, LastName = addedBook.Author.LastName, Email = addedBook.Author.Email }
+                Author = addedBook.Author == null ? null : new AuthorInBookDto { Id = addedBook.Author.Id, FirstName = addedBook.Author.FirstName, LastName = addedBook.Author.LastName, Email = addedBook.Author.Email }
+
             };
 
             return TypedResults.Created($"{request.Scheme}://{request.Host}{request.PathBase}/books/{addedBook.Id}", bookDto);
