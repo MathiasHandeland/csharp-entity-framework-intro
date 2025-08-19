@@ -22,7 +22,9 @@ namespace exercise.webapi.Repository
 
         public async Task<Author> GetAuthorById(int id)
         {
-            throw new NotImplementedException();
+            return await _db.Authors
+                .Include(a => a.Books) // Include books written by the author
+                .FirstOrDefaultAsync(a => a.Id == id); // Find the target author by id
         }
     }
 }

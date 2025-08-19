@@ -12,7 +12,8 @@ namespace exercise.webapi.Endpoints
             var authors = app.MapGroup("authors");
 
             authors.MapGet("/", GetAuthors);
-            
+            authors.MapGet("/{id}", GetAuthorById);
+
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -36,6 +37,27 @@ namespace exercise.webapi.Endpoints
             });
             return TypedResults.Ok(authorDtos);
 
+        }
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public static async Task<IResult> GetAuthorById(int id, IAuthorRepository authorRepository)
+        {
+            var author = await authorRepository.GetAuthorById(id);
+            if (author == null) return TypedResults.NotFound($"Author with ID {id} not found.");
+            var authorDto = new AuthorGetDto
+            {
+                Id = author.Id,
+                FirstName = author.FirstName,
+                LastName = author.LastName,
+                Email = author.Email,
+                Books = author.Books.Select(b => new BookInAuthorDto
+                {
+                    Id = b.Id,
+                    Title = b.Title,
+                }).ToList() // Include books written by the author
+            };
+            return TypedResults.Ok(authorDto);
         }
     }
 }
