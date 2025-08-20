@@ -13,6 +13,7 @@ namespace exercise.webapi.Data
         {
 
         }
+        // commented out so that it doesnt ovveride the configuartion in proram.cs
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //{
         //    base.OnConfiguring(optionsBuilder);
