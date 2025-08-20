@@ -2,7 +2,7 @@
 
 namespace exercise.webapi.DTOs
 {
-    // DTO for returning Book data and basic author details (without the collection of books the author has)
+    // DTO for returning Book data and basic author and publisher details (without the collection of books the author and publisher has)
     public class BookGetDto
     {
         public int Id { get; set; }
@@ -10,6 +10,5 @@ namespace exercise.webapi.DTOs
 
         public AuthorInBookDto Author { get; set; }
 
-        public PublisherInBookDto Publisher { get; set; }
     }
 }

@@ -1,11 +1,12 @@
 ﻿using exercise.webapi.DTOs;
+using exercise.webapi.Models;
 using exercise.webapi.Repository;
 using Microsoft.AspNetCore.Mvc;
 
 
 namespace exercise.webapi.Endpoints
 {
-    public static class AuthorEndpoints
+    public static class AuthorApi
     {
         public static void ConfigureAuthorApi(this WebApplication app)
         {
@@ -18,9 +19,9 @@ namespace exercise.webapi.Endpoints
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public static async Task<IResult> GetAuthors(IAuthorRepository authorRepository)
+        public static async Task<IResult> GetAuthors(IRepository<Author> authorRepository)
         {
-            var authors = await authorRepository.GetAllAuthors();
+            var authors = await authorRepository.GetWithIncludes(a => a.Books); // Include books written by the author
             if (authors == null || !authors.Any()) { return TypedResults.NotFound("No authors found."); }
 
             var authorDtos = authors.Select(a => new AuthorGetDto
@@ -41,9 +42,9 @@ namespace exercise.webapi.Endpoints
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public static async Task<IResult> GetAuthorById(int id, IAuthorRepository authorRepository)
+        public static async Task<IResult> GetAuthorById(int id, IRepository<Author> authorRepository)
         {
-            var author = await authorRepository.GetAuthorById(id);
+            var author = (await authorRepository.GetWithIncludes(a => a.Books)).FirstOrDefault(a => a.Id == id);
             if (author == null) return TypedResults.NotFound($"Author with ID {id} not found.");
             var authorDto = new AuthorGetDto
             {
