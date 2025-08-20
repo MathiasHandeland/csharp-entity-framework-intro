@@ -9,5 +9,7 @@ namespace exercise.webapi.DTOs
         public string Title { get; set; }
 
         public AuthorInBookDto Author { get; set; }
+
+        public PublisherInBookDto Publisher { get; set; }
     }
 }
