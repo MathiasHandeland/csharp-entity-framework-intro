@@ -12,7 +12,6 @@ namespace exercise.webapi.Models
         [ForeignKey("Author")]
         public int AuthorId { get; set; } // Foreign key to Author - each book is written by ONE author
         public Author Author { get; set; } = null!; // Navigation property to Author
-
-        
+ 
     }
 }
